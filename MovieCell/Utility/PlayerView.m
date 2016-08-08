@@ -59,7 +59,6 @@
         [self createFrame];
         
         
-        
         AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:url]];
         self.playerItem = item;
         //加载view时自动播放
@@ -186,6 +185,7 @@
     [self removeVideoTimer];
     [self addVideoTimer];
     
+    //监听播放完成后
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(finishMovie:) name:AVPlayerItemDidPlayToEndTimeNotification object:_playerItem];
     
     
@@ -194,6 +194,7 @@
     [self.player play];
 }
 
+//监听播放完成后
 - (void)finishMovie:(NSNotification *)notice{
     __weak typeof(self) weakSelf = self;
     [self.player seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
@@ -258,8 +259,6 @@
 - (void)fullOrNOrmal:(UIButton *)btn{
     btn.selected = !btn.selected;
     
-//    _fullClick(btn);
-    
     if ([self.delegate respondsToSelector:@selector(videoplayViewSwitch:)]) {
         [self.delegate videoplayViewSwitch:btn];
     }
@@ -275,6 +274,7 @@
     self.transform = CGAffineTransformIdentity;
     self.frame = CGRectMake(LScreen_Width, LScreen_Height - ((LScreen_Width/2)*0.65), LScreen_Width/2, (LScreen_Width/2)*0.65);
     self.playerLayer.frame =  self.bounds;
+    _bgImageView.frame = self.bounds;
     [[UIApplication sharedApplication].keyWindow addSubview:self];
     [self createFrame];
     [[UIApplication sharedApplication].keyWindow bringSubviewToFront:self];

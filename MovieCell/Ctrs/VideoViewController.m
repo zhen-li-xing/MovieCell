@@ -99,7 +99,8 @@
         if (!cell) {
             cell = [[VideoTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"bannerImage"];
         }
-    cell.imgView.image = [CatchImage thumbnailImageForVideo:[NSURL URLWithString:AV_url] atTime:15];
+    //获取某个时间的那帧图片
+//    cell.imgView.image = [CatchImage thumbnailImageForVideo:[NSURL URLWithString:AV_url] atTime:15];
     
     [cell setPlayClick:^(UIButton * btn) {
         btn.tag = indexPath.row;
@@ -154,20 +155,7 @@
     
     __weak VideoViewController * VC;
     VC = self;
-//    [_playerView setFullClick:^(UIButton * btn) {
-//        
-//        
-//        if (btn.selected) {
-//            
-//            VC.isfullscreen = YES;
-//            [VC toFullScreen:UIInterfaceOrientationLandscapeLeft];
-//        }else{
-//            [VC toCell];
-//            VC.isfullscreen = NO;
-//        }
-//        
-//        
-//    }];
+
     
     [_playerView setCloseClick:^(UIButton * btn) {
         [VC closePlayer];
@@ -185,19 +173,13 @@
     }];
 }
 
--(void)toFullScreen:(UIInterfaceOrientation )interfaceOrientation{
-    //放在controller中起效
-    [[UIApplication sharedApplication] setStatusBarHidden:YES];
-//    [_playerView toFullScreenWithInterfaceOrientation:interfaceOrientation];
-}
-
+//返回cell上
 -(void)toCell{
     
     self.videoCell = (VideoTableViewCell *)[self.myTableView cellForRowAtIndexPath:_currentIndexPath];
     [_playerView reduction:self.videoCell.bgView];
     _isSmallScreen = NO;
-    //放在controller中起效
-    [[UIApplication sharedApplication] setStatusBarHidden:NO];
+    
     [self.myTableView reloadData];
 }
 
@@ -214,6 +196,7 @@
 }
 
 #pragma mark scrollView delegate
+//根据偏移判断是否小屏幕播放
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if(scrollView == self.myTableView){
@@ -254,7 +237,7 @@
     
     
 }
-
+//释放
 -(void)releaseWMPlayer{
     
     [_playerView releaseWMPlayer];
@@ -264,7 +247,7 @@
     
 }
 
-//切换屏幕方向的代理
+//切换屏幕方向的代理  全屏
 -(void)videoplayViewSwitch:(UIButton *)btn
 {
     
@@ -285,7 +268,12 @@
     }else{
         
         [self.fullVc dismissViewControllerAnimated:YES completion:^{
-            [self toCell];
+            if (_isSmallScreen) {
+                //放widow上,小屏显示
+                [self toSmallScreen];
+            }else{
+                [self toCell];
+            }
             self.isfullscreen = NO;
         }];
         
